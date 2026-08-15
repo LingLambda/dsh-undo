@@ -3,7 +3,7 @@
 [English](README.md) | 中文
 
 > [!WARNING]
-> **超前预览：本版本无法在任何当前已发布的 DeepSeek Harness 版本中使用。** 它依赖尚未发布的 Harness 持久化 `surface/rewind` / `surface/restore` 事件和 `conversation.chat.user-actions` WebUI slot。现在安装后，`/undo` 会安全拒绝并提示升级。本包当前仅用于预览和协调未来集成；在配套 Harness 正式发布前，不应视为可用于生产环境。
+> **超前预览：本版本无法在任何当前已发布的 DeepSeek Harness 版本中使用。** 它依赖尚未发布的 Harness 持久化 `surface/rewind` / `surface/restore` 事件和 `conversation.chat.user-actions` WebUI slot。现在安装后，`/undo` 会安全拒绝并提示升级。本包当前仅用于预览和协调未来集成；在配套 Harness 正式发布前，不应视为可用于生产环境。请查看 <https://github.com/deepseek-ai/deepseek-harness/discussions/467/>
 
 面向 [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness)（`dsh`）的持久化多级撤销/重做插件。它按真实用户轮次回退模型上下文，并恢复该轮工具修改的工作树文件。
 
