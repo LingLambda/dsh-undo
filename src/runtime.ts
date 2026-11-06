@@ -69,7 +69,8 @@ export class UndoRuntime {
     const rewindSeq = this.agent.session.seq
     try {
       const userSeqs = range.shadowedSeqs.filter((seq) => {
-        const event = this.agent.session.events[seq]
+        const session = this.agent.session as any
+        const event = typeof session.eventAt === 'function' ? session.eventAt(seq) : session.events?.[seq]
         return event?.type === 'user/message' && event.data.source.kind === 'user'
       })
       workspaceResult = await this.workspace?.undo(userSeqs, rewindSeq)
