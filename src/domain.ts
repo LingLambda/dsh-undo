@@ -39,14 +39,20 @@ export function activeRewindSeqs(session: Session): readonly number[] {
   return (session.surface as unknown as RewindSurface).activeRewinds
 }
 
+function getSessionEvent(session: Session, seq: number): SessionEvent | undefined {
+  if (typeof (session as any).eventAt === 'function') {
+    return (session as any).eventAt(seq)
+  }
+  return (session as any).events?.[seq]
+}
+
 /** Locate the newest visible model message. */
 export function lastVisibleMessage(session: Session): LastVisibleMessage | undefined {
   const nodes = session.surface.nodes
-  const events = session.events
   for (let index = nodes.length - 1; index >= 0; index--) {
     const seq = nodes[index]
     if (seq === undefined) continue
-    const event = events[seq]
+    const event = getSessionEvent(session, seq)
     if (event === undefined) continue
     if (event.type !== 'user/message' && event.type !== 'assistant/message' && event.type !== 'tool/result') continue
     if (session.deriveEventMessage(event) === null) continue
@@ -66,13 +72,12 @@ export function lastVisibleMessage(session: Session): LastVisibleMessage | undef
  */
 export function computeUndoRange(session: Session, targetUserSeq?: number): UndoRange | undefined {
   const nodes = session.surface.nodes
-  const events = session.events
   let userIndex = -1
   for (let index = nodes.length - 1; index >= 0; index--) {
     const seq = nodes[index]
     if (seq === undefined) continue
     if (targetUserSeq !== undefined && seq !== targetUserSeq) continue
-    const event = events[seq]
+    const event = getSessionEvent(session, seq)
     if (event?.type !== 'user/message' || event.data.source.kind !== 'user') continue
     userIndex = index
     break
@@ -111,7 +116,7 @@ export function lastVisibleText(session: Session, max = 30): string | undefined 
   for (let index = nodes.length - 1; index >= 0; index--) {
     const seq = nodes[index]
     if (seq === undefined) continue
-    const event = session.events[seq]
+    const event = getSessionEvent(session, seq)
     if (event?.type !== 'user/message' || event.data.source.kind !== 'user') continue
     const message = session.deriveEventMessage(event)
     if (message === null) continue

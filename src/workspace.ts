@@ -274,8 +274,16 @@ export class WorkspaceUndoTracker {
     return killed
   }
 
+  private getSessionEvents(): readonly SessionEvent[] {
+    const session = this.agent.session as any
+    if (typeof session.snapshotEvents === 'function') {
+      return session.snapshotEvents()
+    }
+    return session.events ?? []
+  }
+
   private userSeqForCall(callId: string): number | undefined {
-    const events = this.agent.session.events
+    const events = this.getSessionEvents()
     const callIndex = events.findIndex(event => event.type === 'tool/call' && String(event.data.callId) === callId)
     if (callIndex < 0) return undefined
     for (let index = callIndex - 1; index >= 0; index--) {
@@ -287,7 +295,7 @@ export class WorkspaceUndoTracker {
   }
 
   private callSeq(callId: string): number | undefined {
-    return this.agent.session.events.find(event =>
+    return this.getSessionEvents().find(event =>
       event.type === 'tool/call' && String(event.data.callId) === callId)?.seq
   }
 
